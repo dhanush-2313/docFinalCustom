@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 const Report = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { report, patientDetails } = location.state || {};
+  const { report } = location.state || {};
 
   return (
     <div className="report-container bg-white p-4 rounded-md shadow-md">
