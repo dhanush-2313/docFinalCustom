@@ -20,6 +20,7 @@ export default function Patient() {
   const [tablets, setTablets] = useState<{ id: number; name: string }[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
   const [report, setReport] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -58,18 +59,34 @@ export default function Patient() {
   }, []);
 
   useEffect(() => {
-    fetchTablets();
-  }, [page, searchTerm]);
+    const handler = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
 
-  const fetchTablets = async () => {
-    try {
-      const response = await axios.get(`${BACKENDURL}/tablets`, {
-        params: { page, search: searchTerm },
-      });
-      setTablets(response.data);
-    } catch (error) {
-      console.error("Error fetching tablets:", error);
-    }
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm]);
+
+  // Fetch tablets when page or debounced search term changes
+  useEffect(() => {
+    const fetchTablets = async () => {
+      try {
+        const response = await axios.get(`${BACKENDURL}/tablets`, {
+          params: { page, search: debouncedSearchTerm },
+        });
+        setTablets(response.data);
+      } catch (error) {
+        console.error("Error fetching tablets:", error);
+      }
+    };
+
+    fetchTablets();
+  }, [page, debouncedSearchTerm]);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setPage(1); // Reset to first page on new search
   };
 
   const handleSpeechRecognition = () => {
@@ -225,11 +242,6 @@ export default function Patient() {
       </div>
     );
   }
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    setPage(1); // Reset to first page on new search
-  };
 
   const handleTabletDoubleClick = (tabletName: string) => {
     setReport((prevInputData) => `${prevInputData} \n ${tabletName}`.trim());

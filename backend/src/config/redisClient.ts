@@ -1,9 +1,7 @@
 import { createClient } from "redis";
 
 // Use the internal Redis URL provided by Render
-const redisClient = createClient({
-  url: "redis://red-cs16r8q3esus739bc0ug:6379",
-});
+const redisClient = createClient();
 
 redisClient.on("error", (err) => console.error("Redis Client Error", err));
 
