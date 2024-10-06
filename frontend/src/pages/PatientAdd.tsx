@@ -62,7 +62,7 @@ export default function PatientAdd() {
   }, [page, debouncedSearchTerm]);
 
   const handleChange = (e: any) => {
-    setSearchTerm(e.target.value);
+    setInputData(e.target.value);
     setPage(1); // Reset to first page on new search
   };
 
