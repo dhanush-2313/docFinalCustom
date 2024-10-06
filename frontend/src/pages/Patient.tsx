@@ -252,7 +252,7 @@ export default function Patient() {
       <Appbar />
       <div className="flex h-screen">
         <div className="w-1/2 p-4 border-r border-gray-300">
-          <div className="bg-white shadow-md rounded p-6 w-full max-w-md">
+          <div className="bg-white shadow-md rounded p-6 w-full ">
             <h2 className="text-2xl font-bold mb-4">Patient Details</h2>
             <div className="mb-2">
               <span className="font-semibold">Name:</span> {patient.name}
@@ -280,7 +280,7 @@ export default function Patient() {
             <div className="mt-4">
               <h3 className="text-xl font-bold mb-2">Report</h3>
               <textarea
-                className="p-2 border border-gray-300 rounded w-full h-32"
+                className="p-2 border border-gray-300 rounded w-full h-60"
                 value={report}
                 onChange={(e) => setReport(e.target.value)}
                 rows={4}

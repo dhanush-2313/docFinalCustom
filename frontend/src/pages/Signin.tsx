@@ -49,6 +49,7 @@ export default function Signin() {
           />
           <InputBox
             placeholder="123456"
+            type="password"
             label={"Password"}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setPassword(e.target.value);
