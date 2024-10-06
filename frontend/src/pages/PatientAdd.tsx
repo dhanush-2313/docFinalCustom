@@ -70,7 +70,13 @@ export default function PatientAdd() {
 
     recognition.onresult = (event: any) => {
       const speechResult = event.results[event.resultIndex][0].transcript;
-      setInputData((prevData) => prevData + " " + speechResult);
+      const tabletMatch = speechResult.match(/tablet\s+(\w+)/);
+      if (tabletMatch) {
+        const tabletName = tabletMatch[1];
+        setSearchTerm(tabletName);
+      } else {
+        setInputData((prevReport) => prevReport + " " + speechResult);
+      }
     };
 
     recognition.onerror = (event: any) => {

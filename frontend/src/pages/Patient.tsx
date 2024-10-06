@@ -23,7 +23,6 @@ export default function Patient() {
   const [report, setReport] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const recognitionRef = useRef<any>(null);
   const token = localStorage.getItem("token");
 
@@ -86,37 +85,50 @@ export default function Patient() {
     recognition.lang = "en-US";
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
-    recognition.continuous = true; // Keep listening until stopped
+    recognition.continuous = true; // Keep listening continuously
+
+    recognition.onstart = () => {
+      setIsRecording(true);
+    };
 
     recognition.onresult = (event: any) => {
-      const speechResult = event.results[event.resultIndex][0].transcript;
-      setReport((prevReport) => prevReport + " " + speechResult);
+      const speechResult =
+        event.results[event.resultIndex][0].transcript.toLowerCase();
+
+      // Check if the speech result contains the word "tablet" followed by the tablet name
+      const tabletMatch = speechResult.match(/tablet\s+(\w+)/);
+      if (tabletMatch) {
+        const tabletName = tabletMatch[1];
+        setSearchTerm(tabletName);
+      } else {
+        setReport((prevReport) => prevReport + " " + speechResult);
+      }
     };
 
     recognition.onerror = (event: any) => {
       console.error("Speech recognition error:", event.error);
       alert(`Speech recognition error: ${event.error}`);
+      setIsRecording(false);
     };
 
     recognition.onend = () => {
       if (isRecording) {
         recognition.start(); // Restart recognition if still recording
+      } else {
+        setIsRecording(false);
       }
     };
 
     recognition.start();
-    setIsRecording(true);
     recognitionRef.current = recognition;
   };
 
   const stopSpeechRecognition = () => {
     if (recognitionRef.current) {
-      //@ts-ignore
       recognitionRef.current.stop();
       setIsRecording(false);
     }
   };
-
   // const handleSubmitReport = async () => {
   //   if (!report.trim()) {
   //     alert("Report field is required.");
@@ -132,20 +144,6 @@ export default function Patient() {
   //     console.error("Error submitting report", err);
   //   }
   // };
-
-  const deletePatient = async () => {
-    setIsDeleting(true);
-
-    try {
-      await axios.delete(`${BACKENDURL}/patient/${id}`);
-      alert("Patient deleted successfully");
-      navigate("/dashboard");
-    } catch (err) {
-      console.error("Error deleting patient", err);
-    } finally {
-      setIsDeleting(false);
-    }
-  };
 
   const generateReport = async () => {
     if (!patient) return;
@@ -270,7 +268,7 @@ export default function Patient() {
             <div className="mt-4">
               <h3 className="text-xl font-bold mb-2">Report</h3>
               <textarea
-                className="p-2 border border-gray-300 rounded w-full"
+                className="p-2 border border-gray-300 rounded w-full h-32"
                 value={report}
                 onChange={(e) => setReport(e.target.value)}
                 rows={4}
