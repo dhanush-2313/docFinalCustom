@@ -94,6 +94,11 @@ export const patientsState = atom({
   default: [],
 });
 
+export const isDeletingState = atom({
+  key: "isDeletingState",
+  default: false,
+});
+
 export const filterState = atom({
   key: "filterState",
   default: "",

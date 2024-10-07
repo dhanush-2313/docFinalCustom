@@ -7,6 +7,7 @@ import {
   debouncedSearchTermState,
   doctorNameState,
   errorState,
+  isDeletingState,
   isGeneratingState,
   isRecordingState,
   loadingState,
@@ -41,6 +42,7 @@ export default function Patient() {
   const [report, setReport] = useRecoilState(reportState);
   const [isRecording, setIsRecording] = useRecoilState(isRecordingState);
   const [isGenerating, setIsGenerating] = useRecoilState(isGeneratingState);
+  const [isDeleting, setIsDeleting] = useRecoilState(isDeletingState);
   const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
@@ -161,7 +163,19 @@ export default function Patient() {
   //     console.error("Error submitting report", err);
   //   }
   // };
+  const deletePatient = async () => {
+    setIsDeleting(true);
 
+    try {
+      await axios.delete(`${BACKENDURL}/patient/${id}`);
+      alert("Patient deleted successfully");
+      navigate("/dashboard");
+    } catch (err) {
+      console.error("Error deleting patient", err);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
   const generateReport = async () => {
     if (!patient) return;
 
@@ -305,6 +319,15 @@ export default function Patient() {
                 </ul>
               </div>
             )}
+            <div className="mt-4">
+              <button
+                onClick={deletePatient}
+                className="p-2 bg-red-500 text-white rounded"
+                disabled={isDeleting}
+              >
+                {isDeleting ? "Deleting patient.." : "Delete patient"}
+              </button>
+            </div>
           </div>
         </div>
         <div className="w-1/2 p-4">
