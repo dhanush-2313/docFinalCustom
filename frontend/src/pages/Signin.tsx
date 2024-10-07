@@ -6,11 +6,13 @@ import { InputBox } from "../components/InputBox";
 import { SubHeading } from "../components/SubHeading";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { doctorNameState, passwordState } from "../store/atoms";
 const BACKENDURL = import.meta.env.VITE_BACKEND_URL;
 
 export default function Signin() {
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
+  const [name, setName] = useRecoilState(doctorNameState);
+  const [password, setPassword] = useRecoilState(passwordState);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const token = localStorage.getItem("token");

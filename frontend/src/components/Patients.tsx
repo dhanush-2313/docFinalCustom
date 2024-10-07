@@ -1,12 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import {
+  debouncedFilterState,
+  filterState,
+  patientsState,
+} from "../store/atoms";
 const BACKENDURL = import.meta.env.VITE_BACKEND_URL;
 
 export const Patients = () => {
-  const [patients, setPatients] = useState([]);
-  const [filter, setFilter] = useState("");
-  const [debouncedFilter, setDebouncedFilter] = useState(filter);
+  const [patients, setPatients] = useRecoilState(patientsState);
+  const [filter, setFilter] = useRecoilState(filterState);
+  const [debouncedFilter, setDebouncedFilter] =
+    useRecoilState(debouncedFilterState);
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 

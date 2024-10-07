@@ -1,39 +1,34 @@
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Appbar } from "../components/Appbar";
+import { useRecoilState, useRecoilValue } from "recoil";
+import {
+  debouncedSearchTermState,
+  doctorNameState,
+  inputDataState,
+  isGeneratingState,
+  isRecordingState,
+  pageState,
+  searchTermState,
+  tabletsState,
+} from "../store/atoms";
+
 const BACKENDURL = import.meta.env.VITE_BACKEND_URL;
 
 export default function PatientAdd() {
-  const [inputData, setInputData] = useState("");
-  const [isRecording, setIsRecording] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [tablets, setTablets] = useState<{ id: number; name: string }[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [page, setPage] = useState(1);
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
+  const [inputData, setInputData] = useRecoilState(inputDataState);
+  const [isRecording, setIsRecording] = useRecoilState(isRecordingState);
+  const [isGenerating, setIsGenerating] = useRecoilState(isGeneratingState);
+  const [tablets, setTablets] = useRecoilState(tabletsState);
+  const [searchTerm, setSearchTerm] = useRecoilState(searchTermState);
+  const [page, setPage] = useRecoilState(pageState);
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useRecoilState(
+    debouncedSearchTermState
+  );
+  const doctorName = useRecoilValue(doctorNameState);
   const recognitionRef = useRef(null);
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
-  const [doctorName, setDoctorName] = useState("");
-
-  useEffect(() => {
-    const getDoctorData = async () => {
-      try {
-        const nameResponse = await axios.get(`${BACKENDURL}/doctor/info`, {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        });
-        setDoctorName(nameResponse.data.name);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setDoctorName("");
-      }
-    };
-
-    getDoctorData();
-  }, []);
 
   useEffect(() => {
     const handler = setTimeout(() => {

@@ -1,13 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Appbar } from "../components/Appbar";
 import { WelcomeMessage } from "../components/WelcomeMessage";
 import { Patients } from "../components/Patients";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useRecoilValue } from "recoil";
+import { doctorNameState } from "../store/atoms";
 const BACKENDURL = import.meta.env.VITE_BACKEND_URL;
 
 const Dashboard = () => {
-  const [name, setName] = useState("");
+  const name = useRecoilValue(doctorNameState);
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
@@ -19,15 +21,13 @@ const Dashboard = () => {
       }
 
       try {
-        const nameResponse = await axios.get(`${BACKENDURL}/doctor/info`, {
+        await axios.get(`${BACKENDURL}/doctor/info`, {
           headers: {
             Authorization: "Bearer " + token,
           },
         });
-        setName(nameResponse.data.name);
       } catch (error) {
         console.error("Error fetching data:", error);
-        setName("");
       }
     };
 

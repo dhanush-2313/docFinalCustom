@@ -1,7 +1,22 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Appbar } from "../components/Appbar"; // Assuming you have an Appbar component
+import { useRecoilState, useRecoilValue } from "recoil";
+import {
+  debouncedSearchTermState,
+  doctorNameState,
+  errorState,
+  isGeneratingState,
+  isRecordingState,
+  loadingState,
+  pageState,
+  patientState,
+  reportState,
+  searchTermState,
+  tabletsState,
+} from "../store/atoms";
+
 const BACKENDURL = import.meta.env.VITE_BACKEND_URL;
 
 interface Patient {
@@ -13,19 +28,20 @@ interface Patient {
 export default function Patient() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [patient, setPatient] = useState<Patient | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [doctorName, setDoctorName] = useState("");
-  const [tablets, setTablets] = useState<{ id: number; name: string }[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [page, setPage] = useState(1);
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
-  const [report, setReport] = useState("");
-  const [isRecording, setIsRecording] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [patient, setPatient] = useRecoilState(patientState);
+  const [loading, setLoading] = useRecoilState(loadingState);
+  const [error, setError] = useRecoilState(errorState);
+  const doctorName = useRecoilValue(doctorNameState);
+  const [tablets, setTablets] = useRecoilState(tabletsState);
+  const [searchTerm, setSearchTerm] = useRecoilState(searchTermState);
+  const [page, setPage] = useRecoilState(pageState);
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useRecoilState(
+    debouncedSearchTermState
+  );
+  const [report, setReport] = useRecoilState(reportState);
+  const [isRecording, setIsRecording] = useRecoilState(isRecordingState);
+  const [isGenerating, setIsGenerating] = useRecoilState(isGeneratingState);
   const recognitionRef = useRef<any>(null);
-  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchPatient = async () => {
@@ -40,22 +56,6 @@ export default function Patient() {
     };
 
     fetchPatient();
-
-    const getDoctorData = async () => {
-      try {
-        const nameResponse = await axios.get(`${BACKENDURL}/doctor/info`, {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        });
-        setDoctorName(nameResponse.data.name);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setDoctorName("");
-      }
-    };
-
-    getDoctorData();
   }, []);
 
   useEffect(() => {
