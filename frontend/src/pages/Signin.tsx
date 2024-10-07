@@ -88,11 +88,11 @@ export default function Signin() {
           {loading && <div className="text-black">Loading...</div>}
           {error && <div className="text-red-500">{error}</div>}
 
-          <BottomWarning
+          {/* <BottomWarning
             label={"Don't have an account?"}
             buttonText={"Sign up"}
             to={"/signup"}
-          />
+          /> */}
         </div>
       </div>
     </div>
