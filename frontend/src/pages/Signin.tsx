@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { BottomWarning } from "../components/BottomWarning";
 import { Button } from "../components/Button";
 import { Heading } from "../components/Heading";
 import { InputBox } from "../components/InputBox";
