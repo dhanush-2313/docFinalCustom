@@ -17,6 +17,20 @@ export default function Signin() {
   const token = localStorage.getItem("token");
 
   useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Enter") {
+        handleSignin();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [name, password]);
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const nameResponse = await axios.get(`${BACKENDURL}/doctor/info`, {
@@ -24,7 +38,11 @@ export default function Signin() {
             Authorization: "Bearer " + token,
           },
         });
-        if (nameResponse.data.name) navigate("/dashboard");
+        if (nameResponse.data.name) {
+          setName(nameResponse.data.name);
+          sessionStorage.setItem("doctorName", nameResponse.data.name);
+          navigate("/dashboard");
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
         setName("");
@@ -33,6 +51,27 @@ export default function Signin() {
 
     fetchData();
   }, []);
+
+  const handleSignin = async () => {
+    try {
+      if (!name || !password) {
+        setError("All fields are required.");
+        setTimeout(() => setError(null), 3000);
+        return;
+      }
+      setLoading(true);
+      const response = await axios.post(`${BACKENDURL}/doctor/login`, {
+        name,
+        password,
+      });
+      localStorage.setItem("token", response.data.token);
+      navigate("/dashboard");
+    } catch (error) {
+      setError("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const navigate = useNavigate();
   return (
@@ -57,32 +96,7 @@ export default function Signin() {
             }}
           />
           <div className="pt-4">
-            <Button
-              label={"Sign in"}
-              onClick={async () => {
-                try {
-                  if (!name || !password) {
-                    setError("All fields are required.");
-                    setTimeout(() => setError(null), 3000); // Use setTimeout instead of setInterval
-                    return;
-                  }
-                  setLoading(true);
-                  const response = await axios.post(
-                    `${BACKENDURL}/doctor/login`,
-                    {
-                      name,
-                      password,
-                    }
-                  );
-                  localStorage.setItem("token", response.data.token);
-                  navigate("/dashboard");
-                } catch (error) {
-                  setError("An error occurred. Please try again.");
-                } finally {
-                  setLoading(false);
-                }
-              }}
-            />
+            <Button label={"Sign in"} onClick={handleSignin} />
           </div>
           {loading && <div className="text-black">Loading...</div>}
           {error && <div className="text-red-500">{error}</div>}

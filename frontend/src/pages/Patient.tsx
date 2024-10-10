@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Appbar } from "../components/Appbar"; // Assuming you have an Appbar component
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import {
   debouncedSearchTermState,
   doctorNameState,
@@ -32,7 +32,7 @@ export default function Patient() {
   const [patient, setPatient] = useRecoilState(patientState);
   const [loading, setLoading] = useRecoilState(loadingState);
   const [error, setError] = useRecoilState(errorState);
-  const doctorName = useRecoilValue(doctorNameState);
+  const [doctorName, setDoctorName] = useRecoilState(doctorNameState);
   const [tablets, setTablets] = useRecoilState(tabletsState);
   const [searchTerm, setSearchTerm] = useRecoilState(searchTermState);
   const [page, setPage] = useRecoilState(pageState);
@@ -44,6 +44,27 @@ export default function Patient() {
   const [isGenerating, setIsGenerating] = useRecoilState(isGeneratingState);
   const [isDeleting, setIsDeleting] = useRecoilState(isDeletingState);
   const recognitionRef = useRef<any>(null);
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const nameResponse = await axios.get(`${BACKENDURL}/doctor/info`, {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        });
+        if (nameResponse.data.name) {
+          setDoctorName(nameResponse.data.name);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setDoctorName("");
+      }
+    };
+
+    fetchData();
+  }, []);
 
   useEffect(() => {
     const fetchPatient = async () => {

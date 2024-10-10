@@ -2,7 +2,7 @@ import { useRef, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Appbar } from "../components/Appbar";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import {
   debouncedSearchTermState,
   doctorNameState,
@@ -26,9 +26,30 @@ export default function PatientAdd() {
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useRecoilState(
     debouncedSearchTermState
   );
-  const doctorName = useRecoilValue(doctorNameState);
+  const [doctorName, setDoctorName] = useRecoilState(doctorNameState);
   const recognitionRef = useRef(null);
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const nameResponse = await axios.get(`${BACKENDURL}/doctor/info`, {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        });
+        if (nameResponse.data.name) {
+          setDoctorName(nameResponse.data.name);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setDoctorName("");
+      }
+    };
+
+    fetchData();
+  }, []);
 
   useEffect(() => {
     const handler = setTimeout(() => {
