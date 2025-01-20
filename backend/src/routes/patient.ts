@@ -118,8 +118,8 @@ const getReport = async (req: Request, res: Response) => {
   const { data } = req.body;
   const sum =
     data +
-    // "Generate a well formatted hospital report with the following details dont do additional things on your own. DOnt you understand by repiovus prescriptions i told u to just format what i send i am sending u previous prescriptions right are u dumb why arent u printing all of that. Yes  npow you did that now format the report well dont add any node in the end  ";
-  "I will be sharing name, age and the report with the tablet name so just tell me if it is the right tablet or not disease and diagnise should match if there is mistake say what was the mistake and give me the right tabet with good diagonoise "
+    "Generate a well formatted hospital report with the following details dont do additional things on your own. DOnt you understand by repiovus prescriptions i told u to just format what i send i am sending u previous prescriptions right are u dumb why arent u printing all of that. Yes  npow you did that now format the report well dont add any node in the end  ";
+  // "I will be sharing name, age and the report with the tablet name so just tell me if it is the right tablet or not disease and diagnise should match if there is mistake say what was the mistake and give me the right tabet with good diagonoise "
   try {
     const openai = new Openai({
       apiKey: OPENAI_API_KEY,
